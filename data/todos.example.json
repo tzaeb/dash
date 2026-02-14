@@ -1,0 +1,23 @@
+[
+  {
+    "id": "example1",
+    "text": "Build the dashboard",
+    "details": "Set up React + Vite project",
+    "status": "done",
+    "createdAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": "example2",
+    "text": "Add dark mode",
+    "details": "",
+    "status": "in_progress",
+    "createdAt": "2026-01-01T09:00:00.000Z"
+  },
+  {
+    "id": "example3",
+    "text": "Review PR",
+    "details": "Waiting for feedback from team",
+    "status": "waiting",
+    "createdAt": "2026-01-01T10:00:00.000Z"
+  }
+]

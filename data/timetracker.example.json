@@ -1,0 +1,14 @@
+[
+  {
+    "id": "example1",
+    "project": "dash",
+    "startTime": "2026-01-01T09:00:00.000Z",
+    "endTime": "2026-01-01T10:30:00.000Z"
+  },
+  {
+    "id": "example2",
+    "project": "reading",
+    "startTime": "2026-01-01T11:00:00.000Z",
+    "endTime": "2026-01-01T11:45:00.000Z"
+  }
+]
