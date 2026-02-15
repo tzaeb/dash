@@ -58,6 +58,15 @@ export default function TodoList() {
     loadTodos().then(setTodos);
   }, []);
 
+  useEffect(() => {
+    const handleNew = () => {
+      const input = document.querySelector<HTMLInputElement>('.todo-add input');
+      input?.focus();
+    };
+    window.addEventListener('dash:new-item', handleNew);
+    return () => window.removeEventListener('dash:new-item', handleNew);
+  }, []);
+
   const persist = useCallback((updated: Todo[]) => {
     setTodos(updated);
     saveTodos(updated);

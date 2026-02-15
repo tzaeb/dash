@@ -59,3 +59,47 @@ export async function saveNotes(notes: Note[]): Promise<void> {
     body: JSON.stringify(notes),
   });
 }
+
+export interface Link {
+  id: string;
+  title: string;
+  url: string;
+  tags: string[];
+  type: 'web' | 'folder';
+  clickCount: number;
+  createdAt: string;
+}
+
+export async function loadLinks(): Promise<Link[]> {
+  const res = await fetch('/api/links');
+  return res.json();
+}
+
+export async function saveLinks(links: Link[]): Promise<void> {
+  await fetch('/api/links', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(links),
+  });
+}
+
+export interface ImportantDate {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  createdAt: string;
+}
+
+export async function loadDates(): Promise<ImportantDate[]> {
+  const res = await fetch('/api/dates');
+  return res.json();
+}
+
+export async function saveDates(dates: ImportantDate[]): Promise<void> {
+  await fetch('/api/dates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dates),
+  });
+}

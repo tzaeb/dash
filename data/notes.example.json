@@ -1,9 +1,0 @@
-[
-  {
-    "id": "example1",
-    "title": "Meeting notes",
-    "content": "# Sprint Planning\n\n- Discussed roadmap\n- Assigned tasks",
-    "createdAt": "2026-01-01T08:00:00.000Z",
-    "updatedAt": "2026-01-01T08:30:00.000Z"
-  }
-]

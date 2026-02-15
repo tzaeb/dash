@@ -32,6 +32,19 @@ A markdown-based notes editor for quick notes and documentation.
 - Full Markdown rendering with GFM support
 - Live preview
 
+### Links
+
+A searchable collection of bookmarks for web URLs and local folder paths.
+
+- Fuzzy search across titles, tags, and URLs (powered by Fuse.js)
+- Supports both web links (open in browser) and folder paths (open in file manager)
+- Tag-based organization
+- Copy to clipboard
+
+### Keyboard Shortcuts
+
+Navigate the app and perform actions without leaving the keyboard. Press `?` to view all available shortcuts, or visit the shortcuts page via the keyboard icon in the nav bar.
+
 ## Tech Stack
 
 - **Frontend:** React 19 · TypeScript · Vite
@@ -84,14 +97,13 @@ npx concurrently "npx vite --host 0.0.0.0" "npx tsx server/index.ts"
 
 ```
 src/
-  components/     # React components (TimeTracker, TodoList, Notes, Tagline)
+  components/     # React components (TimeTracker, TodoList, Notes, Links, Shortcuts, Tagline)
   data/           # Static data (principles list)
   api.ts          # Frontend API client
 server/
   index.ts        # Express API server
 data/
   *.json          # Runtime data files (gitignored)
-  *.example.json  # Example data for reference
 ```
 
 ## License

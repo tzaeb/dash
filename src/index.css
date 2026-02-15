@@ -20,17 +20,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f8f9fa;
-    --surface: #ffffff;
-    --border: #e2e4e9;
-    --border-light: #eef0f3;
-    --text: #1a1d27;
-    --text-secondary: #52525b;
-    --text-muted: #a1a1aa;
-    --accent: #6366f1;
-  }
+[data-theme="light"] {
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --border: #e2e4e9;
+  --border-light: #eef0f3;
+  --text: #1a1d27;
+  --text-secondary: #52525b;
+  --text-muted: #a1a1aa;
+  --accent: #6366f1;
 }
 
 *,

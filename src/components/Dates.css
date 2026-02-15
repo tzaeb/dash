@@ -1,0 +1,187 @@
+.dates {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+}
+
+.dates-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dates-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.dates-form input,
+.dates-form textarea {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.dates-form input:focus,
+.dates-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.dates-form textarea {
+  min-height: 2.5rem;
+  resize: vertical;
+}
+
+.dates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+.date-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.date-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.date-badge-month {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.date-badge-day {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.date-badge.is-past {
+  opacity: 0.5;
+}
+
+.date-badge.is-today {
+  background: var(--accent);
+  color: #fff;
+}
+
+.date-badge.is-today .date-badge-month {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.date-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.date-relative {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.date-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+.date-full-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.date-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.date-action-btn {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.date-action-btn:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.date-action-del:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.dates-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin: 1rem 0 0.5rem;
+}
+
+.dates-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.dates-section-past {
+  color: var(--text-muted);
+}
+
+.date-card-past {
+  opacity: 0.6;
+}
+
+.dates-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 2rem 0;
+}

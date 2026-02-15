@@ -1,6 +1,6 @@
 {
   "name": "dash",
-  "description": "A lightweight personal productivity dashboard with time tracking, todos, and notes.",
+  "description": "A lightweight personal productivity dashboard with time tracking, todos, notes and more.",
   "private": true,
   "version": "0.1.0",
   "license": "MIT",
@@ -21,6 +21,7 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "framer-motion": "^12.34.0",
+    "fuse.js": "^7.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",

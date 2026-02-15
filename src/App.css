@@ -6,6 +6,30 @@
 
 .app-header {
   text-align: center;
+  position: relative;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 1.1rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--border-light);
+  border-color: var(--text-muted);
 }
 
 .app-header h1 {
@@ -48,6 +72,15 @@
 .app-title-link {
   color: inherit;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.app-logo {
+  width: 1.4em;
+  height: 1.4em;
+  vertical-align: middle;
 }
 
 .app-title-link:hover {

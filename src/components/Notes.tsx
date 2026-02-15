@@ -42,6 +42,17 @@ export default function Notes() {
     loadNotes().then(setNotes);
   }, []);
 
+  useEffect(() => {
+    const handleNew = () => addNote();
+    const handleEscape = () => setEditingId(null);
+    window.addEventListener('dash:new-item', handleNew);
+    window.addEventListener('dash:escape', handleEscape);
+    return () => {
+      window.removeEventListener('dash:new-item', handleNew);
+      window.removeEventListener('dash:escape', handleEscape);
+    };
+  });
+
   const persist = useCallback((updated: Note[]) => {
     setNotes(updated);
     saveNotes(updated);

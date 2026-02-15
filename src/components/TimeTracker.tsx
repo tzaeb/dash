@@ -58,6 +58,14 @@ export default function TimeTracker() {
     loadTimeEntries().then(setEntries);
   }, []);
 
+  useEffect(() => {
+    const handleToggle = () => {
+      if (activeEntry) handleStop();
+    };
+    window.addEventListener('dash:toggle-timer', handleToggle);
+    return () => window.removeEventListener('dash:toggle-timer', handleToggle);
+  });
+
 
 
   useEffect(() => {
