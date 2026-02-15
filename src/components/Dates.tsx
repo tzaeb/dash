@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { type ImportantDate, loadDates, saveDates } from '../api';
+import { type ImportantDate, generateId, loadDates, saveDates } from '../api';
 import './Dates.css';
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
 
 function formatRelative(dateStr: string): string {
   const now = new Date();

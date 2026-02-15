@@ -2,12 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { type Note, loadNotes, saveNotes } from '../api';
+import { type Note, generateId, loadNotes, saveNotes } from '../api';
 import './Notes.css';
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
 
 function AutoResizeTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const ref = useRef<HTMLTextAreaElement>(null);

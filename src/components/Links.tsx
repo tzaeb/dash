@@ -1,12 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Fuse from 'fuse.js';
-import { type Link, loadLinks, saveLinks } from '../api';
+import { type Link, generateId, loadLinks, saveLinks } from '../api';
 import './Links.css';
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
 
 function detectType(url: string): 'web' | 'folder' {
   if (/^https?:\/\//i.test(url)) return 'web';

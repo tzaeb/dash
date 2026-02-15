@@ -40,10 +40,23 @@ A searchable collection of bookmarks for web URLs and local folder paths.
 - Supports both web links (open in browser) and folder paths (open in file manager)
 - Tag-based organization
 - Copy to clipboard
+- Click counter with most-used links shown on the home screen
+
+### Important Dates
+
+Track upcoming events and deadlines with a visual timeline.
+
+- Add dates with title, date, and optional description
+- Upcoming and past dates split into separate sections
+- Timeline bar on the home screen showing the next 5 events with time scale
+
+### Dark Mode
+
+Toggle between dark and light themes via the button in the header. Preference is saved to localStorage.
 
 ### Keyboard Shortcuts
 
-Navigate the app and perform actions without leaving the keyboard. Press `?` to view all available shortcuts, or visit the shortcuts page via the keyboard icon in the nav bar.
+Navigate the app and perform actions without leaving the keyboard. Press `?` to view all available shortcuts, or visit the shortcuts page in the nav bar.
 
 ## Tech Stack
 
@@ -97,7 +110,7 @@ npx concurrently "npx vite --host 0.0.0.0" "npx tsx server/index.ts"
 
 ```
 src/
-  components/     # React components (TimeTracker, TodoList, Notes, Links, Shortcuts, Tagline)
+  components/     # React components (TimeTracker, TodoList, Notes, Links, Dates, Shortcuts, Tagline)
   data/           # Static data (principles list)
   api.ts          # Frontend API client
 server/

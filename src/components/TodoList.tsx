@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { type Todo, loadTodos, saveTodos } from '../api';
+import { type Todo, generateId, loadTodos, saveTodos } from '../api';
 import './TodoList.css';
 
 function AutoResizeTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
@@ -27,10 +27,6 @@ function AutoResizeTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElem
       }}
     />
   );
-}
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 const columns: { key: Todo['status']; label: string }[] = [

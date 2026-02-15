@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { type TimeEntry, loadTimeEntries, saveTimeEntries } from '../api';
+import { type TimeEntry, generateId, loadTimeEntries, saveTimeEntries } from '../api';
 import './TimeTracker.css';
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
 
 function formatDuration(ms: number) {
   const totalSec = Math.floor(ms / 1000);
