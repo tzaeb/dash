@@ -13,7 +13,8 @@ export interface Todo {
   id: string;
   text: string;
   details: string;
-  status: 'in_progress' | 'waiting' | 'done';
+  status: 'today' | 'in_progress' | 'waiting' | 'done';
+  recurrence?: 'daily' | 'weekly' | 'monthly';
   createdAt: string;
 }
 

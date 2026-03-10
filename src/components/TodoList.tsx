@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { type Todo, generateId, loadTodos, saveTodos } from '../api';
 import './TodoList.css';
 
@@ -30,12 +31,39 @@ function AutoResizeTextarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElem
 }
 
 const columns: { key: Todo['status']; label: string }[] = [
+  { key: 'today', label: 'Today' },
   { key: 'in_progress', label: 'In Progress' },
   { key: 'waiting', label: 'Waiting' },
   { key: 'done', label: 'Done' },
 ];
 
+function spawnConfetti() {
+  const colors = ['#22c55e', '#a855f7', '#3b82f6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+
+  for (let i = 0; i < 55; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 50 + Math.random() * 90;
+    el.style.setProperty('--x', `${Math.cos(angle) * dist}vmin`);
+    el.style.setProperty('--y', `${Math.sin(angle) * dist - 25}vmin`);
+    el.style.setProperty('--r', `${Math.random() * 1080 - 540}deg`);
+    el.style.setProperty('--delay', `${Math.random() * 0.2}s`);
+    el.style.width = `${4 + Math.random() * 7}px`;
+    el.style.height = `${4 + Math.random() * 7}px`;
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.borderRadius = Math.random() > 0.4 ? '50%' : '2px';
+    container.appendChild(el);
+  }
+
+  setTimeout(() => container.remove(), 2500);
+}
+
 const statusColors: Record<Todo['status'], string> = {
+  today: '#a855f7',
   in_progress: '#3b82f6',
   waiting: '#f59e0b',
   done: '#22c55e',
@@ -44,10 +72,13 @@ const statusColors: Record<Todo['status'], string> = {
 export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newText, setNewText] = useState('');
+  const [newRecurrence, setNewRecurrence] = useState<Todo['recurrence']>(undefined);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingDetailsId, setEditingDetailsId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<Todo['status'] | null>(null);
   const [dropIndicator, setDropIndicator] = useState<{ columnKey: Todo['status']; index: number } | null>(null);
+  const [celebrateId, setCelebrateId] = useState<string | null>(null);
+  const [hideRecurring, setHideRecurring] = useState(true);
   const dragIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -74,11 +105,13 @@ export default function TodoList() {
       id: generateId(),
       text: newText.trim(),
       details: '',
-      status: 'in_progress',
+      status: 'today',
+      recurrence: newRecurrence,
       createdAt: new Date().toISOString(),
     };
     persist([todo, ...todos]);
     setNewText('');
+    setNewRecurrence(undefined);
   }
 
   function updateDetails(id: string, details: string) {
@@ -87,6 +120,27 @@ export default function TodoList() {
 
   function removeTodo(id: string) {
     persist(todos.filter((t) => t.id !== id));
+  }
+
+  function triggerDoneCelebration(id: string) {
+    setCelebrateId(id);
+    spawnConfetti();
+    setTimeout(() => {
+      setCelebrateId(null);
+    }, 2000);
+  }
+
+  function changeStatus(id: string, status: Todo['status']) {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+    if (status === 'done') triggerDoneCelebration(id);
+    setExpandedId((prev) => (prev === id ? null : prev));
+    setEditingDetailsId((prev) => (prev === id ? null : prev));
+    let updated = todos.map((t) => (t.id === id ? { ...t, status } : t));
+    if (status === 'done' && todo.recurrence) {
+      updated = [{ ...todo, id: generateId(), status: 'today', createdAt: new Date().toISOString() }, ...updated];
+    }
+    persist(updated);
   }
 
   function toggleExpand(id: string) {
@@ -102,6 +156,9 @@ export default function TodoList() {
   function moveToColumn(draggedId: string, targetStatus: Todo['status'], insertIndex: number) {
     const dragged = todos.find((t) => t.id === draggedId);
     if (!dragged) return;
+    if (targetStatus === 'done' && dragged.status !== 'done') {
+      triggerDoneCelebration(draggedId);
+    }
 
     // Remove the dragged item
     const without = todos.filter((t) => t.id !== draggedId);
@@ -139,6 +196,10 @@ export default function TodoList() {
       } else {
         grouped.push(...without.filter((t) => t.status === col.key));
       }
+    }
+
+    if (targetStatus === 'done' && dragged.recurrence && dragged.status !== 'done') {
+      grouped.unshift({ ...dragged, id: generateId(), status: 'today', createdAt: new Date().toISOString() });
     }
 
     persist(grouped);
@@ -208,7 +269,15 @@ export default function TodoList() {
 
   return (
     <div className="todo-list">
-      <h3>Todo List</h3>
+      <div className="todo-toolbar">
+        <button
+          className={'todo-filter-btn' + (hideRecurring ? ' active' : '')}
+          onClick={() => setHideRecurring((h) => !h)}
+          title={hideRecurring ? 'Show recurring tasks' : 'Hide recurring tasks'}
+        >
+          ↻ {hideRecurring ? 'Show recurring' : 'Hide recurring'}
+        </button>
+      </div>
 
       <div className="todo-add">
         <input
@@ -218,6 +287,16 @@ export default function TodoList() {
           onChange={(e) => setNewText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addTodo()}
         />
+        <select
+          className="todo-recurrence-select"
+          value={newRecurrence || ''}
+          onChange={(e) => setNewRecurrence((e.target.value || undefined) as Todo['recurrence'])}
+        >
+          <option value="">No repeat</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
         <button className="btn btn-start" onClick={addTodo} disabled={!newText.trim()}>
           Add
         </button>
@@ -226,7 +305,7 @@ export default function TodoList() {
       <div className="todo-columns">
         {columns.map((col) => {
           const isOver = dragOverColumn === col.key;
-          const colTodos = todos.filter((t) => t.status === col.key);
+          const colTodos = todos.filter((t) => t.status === col.key && (!hideRecurring || !t.recurrence));
           return (
             <div
               key={col.key}
@@ -275,8 +354,12 @@ export default function TodoList() {
                         >
                           {showIndicatorBefore && <div className="todo-drop-indicator" />}
                           <div
-                            className={'todo-card' + (isExpanded ? ' todo-card-expanded' : '')}
-                            draggable
+                            className={
+                              'todo-card' +
+                              (isExpanded ? ' todo-card-expanded' : '') +
+                              (celebrateId === todo.id ? ' todo-card-celebrate' : '')
+                            }
+                            draggable={editingDetailsId !== todo.id}
                             onDragStart={(e) => handleDragStart(e, todo.id)}
                             onDragEnd={(e) => handleDragEnd(e)}
                             onDragOver={(e) => handleCardDragOver(e, col.key, index)}
@@ -284,6 +367,11 @@ export default function TodoList() {
                             <div className="todo-card-header" onClick={() => toggleExpand(todo.id)}>
                               <span className="todo-drag-handle" title="Drag to move">⠿</span>
                               <span className="todo-text">{todo.text}</span>
+                              {todo.recurrence && (
+                                <span className="todo-recurrence-badge" title={`Repeats ${todo.recurrence}`}>
+                                  {'↻' + todo.recurrence[0].toUpperCase()}
+                                </span>
+                              )}
                               <span className={'todo-chevron' + (isExpanded ? ' open' : '')}>
                                 {todo.details || isExpanded ? '▾' : '＋'}
                               </span>
@@ -322,7 +410,7 @@ export default function TodoList() {
                                           onClick={() => setEditingDetailsId(todo.id)}
                                         >
                                           <Markdown
-                                            remarkPlugins={[remarkGfm]}
+                                            remarkPlugins={[remarkGfm, remarkBreaks]}
                                             components={{
                                               a: ({ href, children }) => (
                                                 <a href={href} target="_blank" rel="noopener noreferrer">
@@ -351,6 +439,34 @@ export default function TodoList() {
                                     </>
                                   )}
                                   <div className="todo-actions">
+                                    <select
+                                      className="todo-recurrence-select"
+                                      value={todo.recurrence || ''}
+                                      onChange={(e) => {
+                                        const val = e.target.value as Todo['recurrence'] | '';
+                                        persist(todos.map((t) =>
+                                          t.id === todo.id ? { ...t, recurrence: val || undefined } : t
+                                        ));
+                                      }}
+                                    >
+                                      <option value="">No repeat</option>
+                                      <option value="daily">Daily</option>
+                                      <option value="weekly">Weekly</option>
+                                      <option value="monthly">Monthly</option>
+                                    </select>
+                                    {columns
+                                      .filter((c) => c.key !== todo.status)
+                                      .map((c) => (
+                                        <button
+                                          key={c.key}
+                                          className="todo-move-btn"
+                                          style={{ borderColor: statusColors[c.key], color: statusColors[c.key] }}
+                                          onClick={() => changeStatus(todo.id, c.key)}
+                                          title={`Move to ${c.label}`}
+                                        >
+                                          → {c.label}
+                                        </button>
+                                      ))}
                                     <button
                                       className="todo-move-btn todo-remove"
                                       onClick={() => removeTodo(todo.id)}

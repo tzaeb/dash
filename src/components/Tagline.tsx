@@ -42,6 +42,7 @@ export default function Tagline() {
   }, []);
 
   const counts = useMemo(() => ({
+    today: todos.filter((t) => t.status === 'today').length,
     inProgress: todos.filter((t) => t.status === 'in_progress').length,
     waiting: todos.filter((t) => t.status === 'waiting').length,
     done: todos.filter((t) => t.status === 'done').length,
@@ -70,6 +71,12 @@ export default function Tagline() {
         >
           <h3 className="home-stats-title">Todos</h3>
           <div className="home-stats-row">
+            <div className="home-stat">
+              <span className="home-stat-value" style={{ color: '#8b5cf6' }}>
+                {counts.today}
+              </span>
+              <span className="home-stat-label">Today</span>
+            </div>
             <div className="home-stat">
               <span className="home-stat-value" style={{ color: '#3b82f6' }}>
                 {counts.inProgress}
@@ -139,12 +146,13 @@ export default function Tagline() {
       {upcomingDates.length > 0 && (() => {
         const now = new Date();
         now.setHours(0, 0, 0, 0);
-        const maxDays = Math.max(
+        const furthest = Math.max(
           ...upcomingDates.map((d) =>
             Math.round((new Date(d.date + 'T00:00:00').getTime() - now.getTime()) / 86400000)
           ),
           1
         );
+        const maxDays = Math.max(furthest, 90);
 
         // Build month ticks between today and the furthest date
         const monthTicks: { label: string; pct: number }[] = [];

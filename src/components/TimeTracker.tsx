@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { type TimeEntry, generateId, loadTimeEntries, saveTimeEntries } from '../api';
 import './TimeTracker.css';
 
@@ -11,7 +11,7 @@ function formatDuration(ms: number) {
 }
 
 function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 function formatDate(iso: string) {
@@ -139,16 +139,50 @@ export default function TimeTracker() {
     }))
     .sort((a, b) => b.ms - a.ms);
 
-  // Day summary
-  const todayEntries = entries.filter((e) => new Date(e.startTime) >= getStartOfDay(new Date()));
-  const firstStart = todayEntries.length > 0 ? todayEntries[0].startTime : null;
-  const completedToday = todayEntries.filter((e) => e.endTime);
-  const lastEnd =
-    completedToday.length > 0
-      ? completedToday.reduce((latest, e) =>
-          new Date(e.endTime!) > new Date(latest.endTime!) ? e : latest
-        ).endTime
-      : null;
+  // Day timeline with break detection
+  const dayTimeline = useMemo(() => {
+    const todayStart = getStartOfDay(new Date());
+    const todayCompleted = entries
+      .filter((e) => new Date(e.startTime) >= todayStart && e.endTime)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+    if (todayCompleted.length === 0) return null;
+
+    const fmt = (iso: string) => {
+      const d = new Date(iso);
+      return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    };
+    const durStr = (ms: number) => {
+      const m = Math.round(ms / 60000);
+      if (m < 60) return `${m}m`;
+      return `${Math.floor(m / 60)}h ${(m % 60).toString().padStart(2, '0')}m`;
+    };
+
+    const segments: { type: 'work' | 'break'; start: string; end: string; project?: string; durationMs: number }[] = [];
+    for (let i = 0; i < todayCompleted.length; i++) {
+      const e = todayCompleted[i];
+      segments.push({
+        type: 'work',
+        start: e.startTime,
+        end: e.endTime!,
+        project: e.project,
+        durationMs: new Date(e.endTime!).getTime() - new Date(e.startTime).getTime(),
+      });
+      if (i < todayCompleted.length - 1) {
+        const next = todayCompleted[i + 1];
+        const gap = new Date(next.startTime).getTime() - new Date(e.endTime!).getTime();
+        if (gap > 5 * 60000) {
+          segments.push({
+            type: 'break',
+            start: e.endTime!,
+            end: next.startTime,
+            durationMs: gap,
+          });
+        }
+      }
+    }
+
+    return { segments, fmt, durStr };
+  }, [entries]);
 
   return (
     <div className="time-tracker">
@@ -182,7 +216,7 @@ export default function TimeTracker() {
         )}
       </div>
 
-      {firstStart && (
+      {dayTimeline && (
         <>
           <button
             className="tt-log-toggle"
@@ -192,11 +226,28 @@ export default function TimeTracker() {
           </button>
           {showDaySummary && (
             <div className="tt-day-summary visible">
-              Day started at <strong>{formatTime(firstStart)}</strong>
-              {lastEnd && !activeEntry && (
-                <> · Last entry ended at <strong>{formatTime(lastEnd)}</strong></>
+              <div className="day-timeline">
+                {dayTimeline.segments.map((seg, i) => (
+                  <div key={i} className={`dt-row dt-${seg.type}`}>
+                    <span className="dt-time">{dayTimeline.fmt(seg.start)}</span>
+                    <span className="dt-dash">&ndash;</span>
+                    <span className="dt-time">{dayTimeline.fmt(seg.end)}</span>
+                    <span className="dt-label">
+                      {seg.type === 'work' ? seg.project : 'Break'}
+                    </span>
+                    <span className="dt-dur">{dayTimeline.durStr(seg.durationMs)}</span>
+                  </div>
+                ))}
+              </div>
+              {activeEntry && (
+                <div className="dt-row dt-work" style={{ marginTop: '0.25rem' }}>
+                  <span className="dt-time">{dayTimeline.fmt(activeEntry.startTime)}</span>
+                  <span className="dt-dash">&ndash;</span>
+                  <span className="dt-time" style={{ fontStyle: 'italic', color: '#ef4444' }}>now</span>
+                  <span className="dt-label">{activeEntry.project}</span>
+                  <span className="dt-dur">{dayTimeline.durStr(now - new Date(activeEntry.startTime).getTime())}</span>
+                </div>
               )}
-              {activeEntry && <> · Currently tracking</>}
             </div>
           )}
         </>

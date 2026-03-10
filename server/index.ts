@@ -3,17 +3,17 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '..', 'data');
 const distDir = path.join(__dirname, '..', 'dist');
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
-const HOST = process.env.HOST || 'localhost';
+const HOST = 'localhost';
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: `http://localhost:${PORT}` }));
 app.use(express.json({ limit: '1mb' }));
 
 // --- Data helpers ---
@@ -109,7 +109,7 @@ app.post('/api/open-folder', (req, res) => {
     platform === 'win32' ? 'explorer' :
     'xdg-open';
 
-  exec(`${cmd} "${resolved}"`, (err) => {
+  execFile(cmd, [resolved], (err) => {
     if (err) return res.status(500).json({ error: 'Failed to open folder' });
     res.json({ ok: true });
   });

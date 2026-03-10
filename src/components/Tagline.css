@@ -265,3 +265,60 @@
   font-size: 0.6rem;
   color: var(--text-muted);
 }
+
+/* Day timeline */
+.day-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dt-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.dt-work {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.dt-break {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.75rem;
+  background: rgba(245, 158, 11, 0.06);
+  border-left: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+.dt-time {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  min-width: 2.8rem;
+}
+
+.dt-dash {
+  color: var(--text-muted);
+}
+
+.dt-label {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dt-break .dt-label {
+  font-weight: 400;
+}
+
+.dt-dur {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
