@@ -3,21 +3,22 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execFile } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '..', 'data');
 const distDir = path.join(__dirname, '..', 'dist');
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
-const HOST = process.env.HOST || 'localhost';
+const HOST = 'localhost';
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: `http://localhost:${PORT}` }));
 app.use(express.json({ limit: '1mb' }));
 
 // --- Data helpers ---
 
-const ALLOWED_FILES = ['timetracker.json', 'todos.json', 'notes.json'] as const;
+const ALLOWED_FILES = ['timetracker.json', 'todos.json', 'notes.json', 'links.json', 'dates.json'] as const;
 
 function readJson(file: string) {
   if (!ALLOWED_FILES.includes(file as typeof ALLOWED_FILES[number])) return [];
@@ -66,6 +67,52 @@ app.post('/api/notes', (req, res) => {
   if (!Array.isArray(req.body)) return res.status(400).json({ error: 'Expected an array' });
   writeJson('notes.json', req.body);
   res.json({ ok: true });
+});
+
+// Links
+app.get('/api/links', (_req, res) => {
+  res.json(readJson('links.json'));
+});
+
+app.post('/api/links', (req, res) => {
+  if (!Array.isArray(req.body)) return res.status(400).json({ error: 'Expected an array' });
+  writeJson('links.json', req.body);
+  res.json({ ok: true });
+});
+
+// Dates
+app.get('/api/dates', (_req, res) => {
+  res.json(readJson('dates.json'));
+});
+
+app.post('/api/dates', (req, res) => {
+  if (!Array.isArray(req.body)) return res.status(400).json({ error: 'Expected an array' });
+  writeJson('dates.json', req.body);
+  res.json({ ok: true });
+});
+
+// Open folder in system file manager
+app.post('/api/open-folder', (req, res) => {
+  const { folderPath } = req.body;
+  if (typeof folderPath !== 'string' || !folderPath.trim()) {
+    return res.status(400).json({ error: 'folderPath is required' });
+  }
+
+  const resolved = path.resolve(folderPath);
+  if (!fs.existsSync(resolved)) {
+    return res.status(404).json({ error: 'Path does not exist' });
+  }
+
+  const platform = process.platform;
+  const cmd =
+    platform === 'darwin' ? 'open' :
+    platform === 'win32' ? 'explorer' :
+    'xdg-open';
+
+  execFile(cmd, [resolved], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to open folder' });
+    res.json({ ok: true });
+  });
 });
 
 // Health check

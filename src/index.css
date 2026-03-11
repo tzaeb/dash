@@ -20,17 +20,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f8f9fa;
-    --surface: #ffffff;
-    --border: #e2e4e9;
-    --border-light: #eef0f3;
-    --text: #1a1d27;
-    --text-secondary: #52525b;
-    --text-muted: #a1a1aa;
-    --accent: #6366f1;
-  }
+[data-theme="light"] {
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --border: #e2e4e9;
+  --border-light: #eef0f3;
+  --text: #1a1d27;
+  --text-secondary: #52525b;
+  --text-muted: #a1a1aa;
+  --accent: #6366f1;
 }
 
 *,
@@ -47,4 +45,39 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--text);
+}
+
+/* Confetti */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  opacity: 0;
+  animation: confetti-burst 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) var(--delay, 0s) forwards;
+}
+
+@keyframes confetti-burst {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(0);
+    opacity: 1;
+  }
+  12% {
+    transform: translate(-50%, -50%) translate(calc(var(--x) * 0.15), calc(var(--y) * 0.15)) rotate(calc(var(--r) * 0.1)) scale(1.2);
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--r)) scale(0.4);
+    opacity: 0;
+  }
 }
